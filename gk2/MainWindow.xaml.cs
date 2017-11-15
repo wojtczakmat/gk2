@@ -171,7 +171,7 @@ namespace gk2
 
         private void Button_Click_4(object sender, RoutedEventArgs e)
         {
-            drawer.HeightMap = LoadBitmap(new Uri("C:/Users/Mateusz/Downloads/brick_heightmap.png", UriKind.Absolute));
+            drawer.HeightMap = LoadBitmap(new Uri("pack://application:,,,/gk2;component/Resources/brick_heightmap.png", UriKind.Absolute));
             drawer.Redraw();
         }
     }
