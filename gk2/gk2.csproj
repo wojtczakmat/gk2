@@ -107,5 +107,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\brick_heightmap.png" />
+    <Resource Include="Resources\brick_normalmap.png" />
+    <Resource Include="Resources\crossnrm.jpg" />
+    <Resource Include="Resources\normal_map.jpg" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
