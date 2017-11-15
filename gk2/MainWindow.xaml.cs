@@ -47,24 +47,10 @@ namespace gk2
             image.Source = bitmap;
 
             var polygon = new Polygon();
-            polygon.AddVertex(401, 200);
-            polygon.AddVertex(600, 400);
-            polygon.AddVertex(400, 601);
-            polygon.AddVertex(200, 400);
-            polygon.Close();
-
-            polygons.Add(polygon);
-
-            polygon.IsFilled = true;
-
-            drawer.Drawables.Add(polygon);
-
-            polygon = new Polygon();
-            polygon.AddVertex(100, 100);
-            polygon.AddVertex(100, 200);
-            polygon.AddVertex(150, 150);
-            polygon.AddVertex(210, 210);
-            polygon.AddVertex(200, 100);
+            polygon.AddVertex(1, 1000);
+            polygon.AddVertex(1000, 1000);
+            polygon.AddVertex(1000, 1);
+            polygon.AddVertex(1, 1);
             polygon.Close();
 
             polygons.Add(polygon);

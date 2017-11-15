@@ -109,14 +109,7 @@ namespace gk2
             else
             {
                 var bitmapPixel = ObjectColor.GetBitmapPixel(objectPixels, x, y);
-
-                var NPrim = NormalVector;
-                if (UseNormalMap)
-                {
-                    var mapPixel = normalMap.GetBitmapPixel(normalMapPixels, x, y);
-                    NPrim = GetNPrim(mapPixel);
-                }
-
+                var NPrim = GetNPrim(x,y);
                 var r = bitmapPixel.R * LightColor.R * CosNPrimL(NPrim) / 255.0;
                 var g = bitmapPixel.G * LightColor.G * CosNPrimL(NPrim) / 255.0;
                 var b = bitmapPixel.B * LightColor.B * CosNPrimL(NPrim) / 255.0;
@@ -136,13 +129,33 @@ namespace gk2
             pixels[pixelOffset + 3] = color.A;
         }
 
-        private (double, double, double) GetNPrim(Color c)
+        private (double, double, double) GetNPrim(int xPix, int yPix)
         {
-            var x = (2 * (c.R / 255.0)) - 1;
-            var y = (2 * (c.G / 255.0)) - 1;
-            var z = c.B / 255.0;
+            double x, y, z;
+            (x, y, z) = NormalVector;
+            if (UseNormalMap)
+            {
+                var c = normalMap.GetBitmapPixel(normalMapPixels, xPix, yPix);
+                x = (2 * (c.R / 255.0)) - 1;
+                y = (2 * (c.G / 255.0)) - 1;
+                z = c.B / 255.0;
+            }
             
-            Console.WriteLine(Math.Sqrt(x*x + y*y + z*z));
+            var D = new double[]{0, 0, 0 };
+            if (UseHeightMap)
+            {
+                var rightPixel = heightMap.GetBitmapPixel(heightMapPixels, xPix+1, yPix);
+                var middlePixel = heightMap.GetBitmapPixel(heightMapPixels, xPix, yPix);
+                var upPixel = heightMap.GetBitmapPixel(heightMapPixels, xPix, yPix+1);
+
+                D = new double[]{
+                    rightPixel.R - middlePixel.R,
+                    upPixel.G - middlePixel.G,
+                    -x * (rightPixel.B - middlePixel.B) + -y * (upPixel.B - middlePixel.B)
+                };
+            }
+
+            (x,y,z) = (x + D[0], y + D[1], z+D[2]);
             return Normalize(x, y, z);
         }
 
