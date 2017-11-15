@@ -21,6 +21,25 @@ namespace gk2.Drawables
         public Polygon()
         { }
 
+        public IDrawable HitTest(int x, int y)
+        {
+            foreach (var v in vertices)
+            {
+                var res = v.HitTest(x, y);
+                if (res != null)
+                    return res;
+            }
+
+            foreach (var e in edges)
+            {
+                var res = e.HitTest(x, y);
+                if (res != null)
+                    return res;
+            }
+
+            return null;
+        }
+
         private void Fill(IDrawer drawer)
         {
             var ind = Enumerable.Range(0, vertices.Count).OrderBy(i => vertices[i].Y).ToArray();

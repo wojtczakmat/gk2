@@ -10,5 +10,6 @@ namespace gk2.Drawables
     public interface IDrawable
     {
         void Draw(IDrawer drawer);
+        IDrawable HitTest(int x, int y);
     }
 }
