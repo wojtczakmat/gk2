@@ -18,6 +18,11 @@ namespace gk2.Drawables
         public int X { get; private set; }
         public int Y { get; private set; }
 
+        public IDrawable HitTest(int x, int y)
+        {
+            return Math.Abs(X - x) <= 10 && Math.Abs(Y - y) <= 10 ? this : null;
+        }
+
         public void Draw(IDrawer drawer)
         {
             drawer.SetPixel(X, Y);

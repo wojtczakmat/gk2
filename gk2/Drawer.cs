@@ -195,6 +195,17 @@ namespace gk2
             Redraw();
         }
 
+        public IDrawable HitTest(int x, int y)
+        {
+            foreach (var d in Drawables)
+            {
+                var res = d.HitTest(x, y);
+                if (res != null)
+                    return res;
+            }
+
+            return null;
+        }
 
         public void Redraw()
         {

@@ -20,6 +20,22 @@ namespace gk2.Drawables
 
         public Edge Inverse() => new Edge(End, Begin);
 
+        public IDrawable HitTest(int x, int y)
+        {
+            if (Begin.Y == End.Y)
+                return y == Begin.Y ? this : null;
+            if (Begin.X == End.X)
+                return x == Begin.X ? this : null;
+
+            int m = (End.Y - Begin.Y) / (End.X - Begin.X);
+            int b = End.Y - m * End.X;
+
+            if (x * m + b == y)
+                return this;
+            else
+                return null;
+        }
+
         public void Draw(IDrawer drawer)
         {
             int x = Begin.X;

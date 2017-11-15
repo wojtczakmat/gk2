@@ -36,6 +36,8 @@ namespace gk2
 
         bool useNormalMap;
 
+        Vertex currentVertex;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -97,11 +99,6 @@ namespace gk2
             }
         }
 
-        private void Button_Click_2(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private BitmapSource LoadBitmap(Uri path)
         {
             var bmap = new BitmapImage(path);
@@ -159,6 +156,31 @@ namespace gk2
         {
             drawer.HeightMap = LoadBitmap(new Uri("pack://application:,,,/gk2;component/Resources/brick_heightmap.png", UriKind.Absolute));
             drawer.Redraw();
+        }
+
+        private void image_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                var pos = e.GetPosition(image);
+                if (currentVertex == null)
+                {
+                    var d = drawer.HitTest((int)pos.X, (int)pos.Y);
+                    if (d is Vertex v)
+                    {
+                        currentVertex = v;
+                    }
+                }
+                else
+                {
+                    currentVertex.Move((int)pos.X, (int)pos.Y);
+                    drawer.Redraw();
+                }
+            }
+            else
+            {
+                currentVertex = null;
+            }
         }
     }
 }

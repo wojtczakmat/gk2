@@ -11,7 +11,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="200"/>
         </Grid.RowDefinitions>
-        <Image Grid.Row="0" x:Name="image"/>
+        <Image Grid.Row="0" x:Name="image" MouseMove="image_MouseMove" Stretch="None"/>
         <StackPanel Background="LightGray" Grid.Row="1" Orientation="Horizontal">
             <StackPanel>
                 <Label>Kolor obiektu</Label>
