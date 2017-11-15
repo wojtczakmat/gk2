@@ -128,7 +128,7 @@ namespace gk2
         private void LoadObjectTextureButton_Click(object sender, RoutedEventArgs e)
         {
             //tutaj popup
-            drawer.ObjectColor = LoadBitmap(new Uri("C:/Users/Mateusz/Downloads/brick_normalmap.png", UriKind.Absolute));
+            drawer.ObjectColor = LoadBitmap(new Uri("pack://application:,,,/gk2;component/Resources/normal_map.jpg", UriKind.Absolute));
             drawer.Redraw();
         }
 
@@ -150,7 +150,7 @@ namespace gk2
 
         private void Button_Click_3(object sender, RoutedEventArgs e)
         {
-            drawer.NormalMap = LoadBitmap(new Uri("C:/Users/Mateusz/Downloads/brick_normalmap.png", UriKind.Absolute));
+            drawer.NormalMap = LoadBitmap(new Uri("pack://application:,,,/gk2;component/Resources/brick_normalmap.png", UriKind.Absolute));
             drawer.Redraw();
             NormalMapTextureRadio.IsEnabled = true;
         }
@@ -171,7 +171,7 @@ namespace gk2
 
         private void Button_Click_4(object sender, RoutedEventArgs e)
         {
-            drawer.HeightMap = LoadBitmap(new Uri("C:/Users/Mateusz/Downloads/brick_heightmap.png", UriKind.Absolute));
+            drawer.HeightMap = LoadBitmap(new Uri("pack://application:,,,/gk2;component/Resources/brick_heightmap.png", UriKind.Absolute));
             drawer.Redraw();
         }
     }
