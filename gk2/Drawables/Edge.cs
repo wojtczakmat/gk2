@@ -18,6 +18,9 @@ namespace gk2.Drawables
         public Vertex Begin { get; }
         public Vertex End { get; }
 
+        public bool IsHorizontal => Begin.Y == End.Y;
+        public bool IsVertical => Begin.X == End.X;
+
         public Edge Inverse() => new Edge(End, Begin);
 
         public IDrawable HitTest(int x, int y)

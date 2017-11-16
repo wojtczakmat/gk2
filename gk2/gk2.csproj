@@ -60,6 +60,7 @@
     </ApplicationDefinition>
     <Compile Include="ActiveEdgeTable.cs" />
     <Compile Include="BitmapExtensions.cs" />
+    <Compile Include="Clipping.cs" />
     <Compile Include="Drawables\IDrawable.cs" />
     <Compile Include="Drawables\Edge.cs" />
     <Compile Include="Drawables\Polygon.cs" />

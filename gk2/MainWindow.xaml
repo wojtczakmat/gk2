@@ -50,16 +50,24 @@
             <Separator Opacity="0" Width="20"/>
             <StackPanel>
                 <Label>Wektor normalny</Label>
-                <RadioButton Checked="RadioButton_Checked" IsChecked="True">[0, 0, 1]</RadioButton>
-                <RadioButton Checked="RadioButton_Checked_1" IsEnabled="False" x:Name="NormalMapTextureRadio">z tekstury</RadioButton>
+                <RadioButton Checked="RadioButton_Checked">[0, 0, 1]</RadioButton>
+                <RadioButton Checked="RadioButton_Checked_1" IsChecked="True" x:Name="NormalMapTextureRadio">z tekstury</RadioButton>
                 <Button Click="Button_Click_3">Załaduj teksturę</Button>
             </StackPanel>
             <Separator Opacity="0" Width="20"/>
             <StackPanel>
                 <Label>Zaburzenie</Label>
-                <RadioButton Checked="RadioButton_Checked_2" IsChecked="True">[0, 0, 0]</RadioButton>
-                <RadioButton Checked="RadioButton_Checked_3" IsEnabled="False" x:Name="HeightMapTextureRadio">z tekstury</RadioButton>
+                <RadioButton Checked="RadioButton_Checked_2">[0, 0, 0]</RadioButton>
+                <RadioButton Checked="RadioButton_Checked_3" IsChecked="True" x:Name="HeightMapTextureRadio">z tekstury</RadioButton>
                 <Button Click="Button_Click_4">Załaduj teksturę</Button>
+            </StackPanel>
+            <StackPanel>
+                <Label>Obcinanie wielokątów</Label>
+                <Button Click="Button_Click_5">Część wspólna</Button>
+            </StackPanel>
+            <StackPanel>
+                <Label>Dodanie wielokąta</Label>
+                <Button Click="Button_Click_2">Dodaj nowy</Button>
             </StackPanel>
         </StackPanel>
     </Grid>

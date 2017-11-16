@@ -102,5 +102,62 @@ namespace gk2.Drawables
             edges.Add(new Edge(vertices.Last(), vertices.First()));
             IsClosed = true;
         }
+
+        public void Clip(Polygon clipping)
+        {
+            var list = new List<ClippingPoint>();
+
+            foreach (var v in vertices)
+            {
+                list.Add(new ClippingPoint
+                {
+                    X = v.X,
+                    Y = v.Y,
+                    IsInside = true,
+                    IsVertex = true
+                });
+            }
+
+            foreach (var v in clipping.Vertices)
+            {
+                var cp = new ClippingPoint
+                {
+                    X = v.X,
+                    Y = v.Y,
+                    IsVertex = true
+                };
+                cp.IsInside = ClippingPoint.IsInPolygon(this, cp);
+                list.Add(cp);
+            }
+        }
+
+        class ClippingPoint
+        {
+            public int X { get; set; }
+            public int Y { get; set; }
+            public bool IsVertex { get; set; }
+            public bool IsInside { get; set; }
+
+            public static bool IsInPolygon(Polygon polygon, ClippingPoint testPoint)
+            {
+                bool result = false;
+                int j = polygon.Vertices.Count() - 1;
+                for (int i = 0; i < polygon.Vertices.Count(); i++)
+                {
+                    if (polygon.Vertices[i].Y < testPoint.Y && polygon.Vertices[j].Y >= testPoint.Y || 
+                        polygon.Vertices[j].Y < testPoint.Y && polygon.Vertices[i].Y >= testPoint.Y)
+                    {
+                        if (polygon.Vertices[i].X + (testPoint.Y - polygon.Vertices[i].Y) 
+                            / (polygon.Vertices[j].Y - polygon.Vertices[i].Y) 
+                            * (polygon.Vertices[j].X - polygon.Vertices[i].X) < testPoint.X)
+                        {
+                            result = !result;
+                        }
+                    }
+                    j = i;
+                }
+                return result;
+            }
+        }
     }
 }

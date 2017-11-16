@@ -49,10 +49,10 @@ namespace gk2
             image.Source = bitmap;
 
             var polygon = new Polygon();
-            polygon.AddVertex(1, 1000);
-            polygon.AddVertex(1000, 1000);
-            polygon.AddVertex(1000, 1);
-            polygon.AddVertex(1, 1);
+            polygon.AddVertex(100, 100);
+            polygon.AddVertex(200, 400);
+            polygon.AddVertex(400, 300);
+            polygon.AddVertex(150, 100);
             polygon.Close();
 
             polygons.Add(polygon);
@@ -60,6 +60,23 @@ namespace gk2
             polygon.IsFilled = true;
 
             drawer.Drawables.Add(polygon);
+
+            polygon = new Polygon();
+            polygon.AddVertex(500, 500);
+            polygon.AddVertex(600, 500);
+            polygon.AddVertex(550, 650);
+            polygon.Close();
+
+            polygons.Add(polygon);
+
+            polygon.IsFilled = true;
+
+            drawer.Drawables.Add(polygon);
+
+            drawer.ObjectColor = LoadBitmap(new Uri("pack://application:,,,/gk2;component/Resources/normal_map.jpg", UriKind.Absolute));
+            drawer.NormalMap = LoadBitmap(new Uri("pack://application:,,,/gk2;component/Resources/brick_normalmap.png", UriKind.Absolute));
+            drawer.HeightMap = LoadBitmap(new Uri("pack://application:,,,/gk2;component/Resources/brick_heightmap.png", UriKind.Absolute));
+            drawer.UseNormalMap = drawer.UseHeightMap = true;
 
             drawer.Redraw();
         }
@@ -108,10 +125,39 @@ namespace gk2
                 return bmap;
         }
 
+        private Uri GetBitmapPathFromDialog()
+        {
+            // Create OpenFileDialog 
+            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+
+
+
+            // Set filter for file extension and default file extension 
+            dlg.DefaultExt = ".png";
+            dlg.Filter = "JPEG Files (*.jpeg)|*.jpeg|PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|GIF Files (*.gif)|*.gif";
+
+
+            // Display OpenFileDialog by calling ShowDialog method 
+            Nullable<bool> result = dlg.ShowDialog();
+
+
+            // Get the selected file name and display in a TextBox 
+            if (result == true)
+            {
+                // Open document 
+                string filename = dlg.FileName;
+                return new Uri(filename, UriKind.Absolute);
+            }
+            else
+                return null;
+        }
+
         private void LoadObjectTextureButton_Click(object sender, RoutedEventArgs e)
         {
-            //tutaj popup
-            drawer.ObjectColor = LoadBitmap(new Uri("pack://application:,,,/gk2;component/Resources/normal_map.jpg", UriKind.Absolute));
+            var uri = GetBitmapPathFromDialog();
+            if (uri == null) return;
+
+            drawer.ObjectColor = LoadBitmap(uri);
             drawer.Redraw();
         }
 
@@ -133,7 +179,10 @@ namespace gk2
 
         private void Button_Click_3(object sender, RoutedEventArgs e)
         {
-            drawer.NormalMap = LoadBitmap(new Uri("pack://application:,,,/gk2;component/Resources/brick_normalmap.png", UriKind.Absolute));
+            var uri = GetBitmapPathFromDialog();
+            if (uri == null) return;
+
+            drawer.NormalMap = LoadBitmap(uri);
             drawer.Redraw();
             NormalMapTextureRadio.IsEnabled = true;
         }
@@ -148,13 +197,18 @@ namespace gk2
 
         private void RadioButton_Checked_3(object sender, RoutedEventArgs e)
         {
+            if (drawer == null)
+                return;
             drawer.UseHeightMap = true;
             drawer.Redraw();
         }
 
         private void Button_Click_4(object sender, RoutedEventArgs e)
         {
-            drawer.HeightMap = LoadBitmap(new Uri("pack://application:,,,/gk2;component/Resources/brick_heightmap.png", UriKind.Absolute));
+            var uri = GetBitmapPathFromDialog();
+            if (uri == null) return;
+
+            drawer.HeightMap = LoadBitmap(uri);
             drawer.Redraw();
             HeightMapTextureRadio.IsEnabled = true;
         }
@@ -182,6 +236,57 @@ namespace gk2
             {
                 currentVertex = null;
             }
+        }
+
+        private void Button_Click_5(object sender, RoutedEventArgs e)
+        {
+            if (polygons.Count < 2)
+            {
+                MessageBox.Show("Za mało wielokątów do obcięcia");
+                return;
+            }
+
+            try
+            {
+                var clipping = new Clipping();
+                var polys = clipping.Clip(polygons[0], polygons[1]);
+
+                drawer.Drawables.Remove(polygons[0]);
+                drawer.Drawables.Remove(polygons[1]);
+                polygons.RemoveRange(0, 2);
+
+                foreach (var list in polys)
+                {
+                    var polygon = new Polygon();
+                    foreach (var v in list)
+                        polygon.AddVertex((int)v.X, (int)v.Y);
+                    polygon.Close();
+                    polygon.IsFilled = true;
+
+                    polygons.Add(polygon);
+                    drawer.Drawables.Add(polygon);
+                }
+                drawer.Redraw();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Wielokąty nie mają części wspólnej lub są niepoprawne");
+            }
+        }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            var polygon = new Polygon();
+            polygon.AddVertex(100, 100);
+            polygon.AddVertex(200, 200);
+            polygon.AddVertex(300, 250);
+            polygon.AddVertex(250, 300);
+            polygon.AddVertex(150, 220);
+            polygon.Close();
+            polygon.IsFilled = true;
+
+            polygons.Add(polygon);
+            drawer.Drawables.Add(polygon);
         }
     }
 }
