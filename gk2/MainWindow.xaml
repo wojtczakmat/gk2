@@ -60,11 +60,17 @@
                 <RadioButton Checked="RadioButton_Checked_2">[0, 0, 0]</RadioButton>
                 <RadioButton Checked="RadioButton_Checked_3" IsChecked="True" x:Name="HeightMapTextureRadio">z tekstury</RadioButton>
                 <Button Click="Button_Click_4">Załaduj teksturę</Button>
+                <Separator />
+                <Label>Współczynnik zaburzenia</Label>
+                <TextBox x:Name="DistortionTextbox">0.01</TextBox>
+                <Button Click="Button_Click_6">Zmień</Button>
             </StackPanel>
+            <Separator Opacity="0" Width="20"/>
             <StackPanel>
                 <Label>Obcinanie wielokątów</Label>
                 <Button Click="Button_Click_5">Część wspólna</Button>
             </StackPanel>
+            <Separator Opacity="0" Width="20"/>
             <StackPanel>
                 <Label>Dodanie wielokąta</Label>
                 <Button Click="Button_Click_2">Dodaj nowy</Button>

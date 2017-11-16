@@ -13,6 +13,7 @@ namespace gk2
     public class Drawer : IDrawer
     {
         WriteableBitmap bitmap;
+        int stride;
         int bitmapBitsPerPixel;
         byte[] pixels;
         Color defaultColor;
@@ -68,11 +69,16 @@ namespace gk2
 
         public bool UseNormalMap { get; set; }
         public bool UseHeightMap { get; set; }
+        public bool UseLightPoint { get; set; }
 
         public Color LightColor { get; set; } = Colors.White;
+        public (double x, double y, double z) LightPoint { get; set; }
+
         public (double x, double y, double z) LightVersor { get; set; } = (0, 0, 1);
         public (double x, double y, double z) NormalVector { get; set; } = (0, 0, 1);
         public (int x, int y, int z) DistortionVector { get; set; } = (0, 0, 0);
+
+        public double DistortionCoeeficient { get; set; } = 0.01;
 
         public List<IDrawable> Drawables { get; set; } = new List<IDrawable>();
 
@@ -81,6 +87,7 @@ namespace gk2
             this.bitmap = bitmap;
             this.pixels = new byte[width * height * (bitmap.Format.BitsPerPixel / 8)];
             bitmapBitsPerPixel = bitmap.Format.BitsPerPixel;
+            stride = bitmap.PixelWidth * bitmapBitsPerPixel / 8;
 
             this.width = width;
             this.height = height;
@@ -111,13 +118,18 @@ namespace gk2
             else
             {
                 var bitmapPixel = ObjectColor.GetBitmapPixel(objectColor.Format.BitsPerPixel, objectPixels, x, y);
-                var NPrim = GetNPrim(x,y);
-                var r = bitmapPixel.R * LightColor.R * CosNPrimL(NPrim) / 255.0;
-                var g = bitmapPixel.G * LightColor.G * CosNPrimL(NPrim) / 255.0;
-                var b = bitmapPixel.B * LightColor.B * CosNPrimL(NPrim) / 255.0;
+                var p = (x, y);
+                var NPrim = GetNPrim(x, y);
+                var r = bitmapPixel.R * LightColor.R * CosNPrimL(NPrim, p) / 255.0;
+                var b = bitmapPixel.B * LightColor.B * CosNPrimL(NPrim, p) / 255.0;
+                var g = bitmapPixel.G * LightColor.G * CosNPrimL(NPrim, p) / 255.0;
 
                 color = Color.FromRgb((byte)r, (byte)g, (byte)b);
 
+                if (r == g && g == b)
+                {
+                    Console.WriteLine("white pixel");
+                }
             }
 
             if (x < 0 || x >= width || y < 0 || y >= height)
@@ -141,23 +153,26 @@ namespace gk2
                 x = (2 * (c.R / 255.0)) - 1;
                 y = (2 * (c.G / 255.0)) - 1;
                 z = c.B / 255.0;
+
+                //if (z == 0)
+                //    z = 1;
             }
-            
-            var D = new double[]{0, 0, 0 };
+
+            var D = new double[3];
             if (UseHeightMap)
             {
                 var rightPixel = heightMap.GetBitmapPixel(heightMap.Format.BitsPerPixel, heightMapPixels, xPix+1, yPix);
                 var middlePixel = heightMap.GetBitmapPixel(heightMap.Format.BitsPerPixel, heightMapPixels, xPix, yPix);
-                var upPixel = heightMap.GetBitmapPixel(heightMap.Format.BitsPerPixel, heightMapPixels, xPix, yPix+1);
+                var upperPixel = heightMap.GetBitmapPixel(heightMap.Format.BitsPerPixel, heightMapPixels, xPix, yPix+1);
 
                 D = new double[]{
-                    rightPixel.R - middlePixel.R,
-                    upPixel.G - middlePixel.G,
-                    -x * (rightPixel.B - middlePixel.B) + -y * (upPixel.B - middlePixel.B)
+                    (rightPixel.R - middlePixel.R) * DistortionCoeeficient,
+                    (upperPixel.G - middlePixel.G) * DistortionCoeeficient,
+                    (-x * (rightPixel.B - middlePixel.B) + -y * (upperPixel.B - middlePixel.B)) * DistortionCoeeficient
                 };
             }
 
-            (x,y,z) = (x + D[0], y + D[1], z+D[2]);
+            (x,y,z) = (x + D[0], y + D[1], z + D[2]);
             return Normalize(x, y, z);
         }
 
@@ -167,9 +182,13 @@ namespace gk2
             return (x / length, y / length, z / length);
         }
 
-        private double CosNPrimL((double x, double y, double z) NPrim)
+        private double CosNPrimL((double x, double y, double z) NPrim, (double x, double y)point)
         {
             var L = LightVersor;
+            if (UseLightPoint)
+            {
+                L = Normalize(LightPoint.x - point.x, LightPoint.x - point.y, LightPoint.z);
+            }
 
             return NPrim.x * L.x + NPrim.y * L.y + NPrim.z * L.z;
         }
@@ -218,7 +237,7 @@ namespace gk2
                 drawable.Draw(this);
             }
 
-            int stride = bitmap.PixelWidth * (bitmap.Format.BitsPerPixel / 8);
+            //int stride = bitmap.PixelWidth * (bitmap.Format.BitsPerPixel / 8);
 
             Int32Rect rect = new Int32Rect(0, 0, width, height);
             bitmap.WritePixels(rect, pixels, stride, 0);

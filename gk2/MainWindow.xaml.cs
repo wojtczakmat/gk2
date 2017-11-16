@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -27,6 +28,8 @@ namespace gk2
 
         readonly WriteableBitmap bitmap;
 
+        Timer lightTimer;
+
         Drawer drawer;
 
         int width => (int)Width;
@@ -35,6 +38,9 @@ namespace gk2
         List<Polygon> polygons = new List<Polygon>();
 
         bool useNormalMap;
+
+        // values for light versor
+        double r, cx, cy, a, h; // r - radius, cx, cy - origin, a - angle, h - height
 
         Vertex currentVertex;
 
@@ -52,7 +58,7 @@ namespace gk2
             polygon.AddVertex(100, 100);
             polygon.AddVertex(200, 400);
             polygon.AddVertex(400, 300);
-            polygon.AddVertex(150, 100);
+            polygon.AddVertex(150, 90);
             polygon.Close();
 
             polygons.Add(polygon);
@@ -63,7 +69,7 @@ namespace gk2
 
             polygon = new Polygon();
             polygon.AddVertex(500, 500);
-            polygon.AddVertex(600, 500);
+            polygon.AddVertex(600, 550);
             polygon.AddVertex(550, 650);
             polygon.Close();
 
@@ -73,12 +79,49 @@ namespace gk2
 
             drawer.Drawables.Add(polygon);
 
-            drawer.ObjectColor = LoadBitmap(new Uri("pack://application:,,,/gk2;component/Resources/normal_map.jpg", UriKind.Absolute));
-            drawer.NormalMap = LoadBitmap(new Uri("pack://application:,,,/gk2;component/Resources/brick_normalmap.png", UriKind.Absolute));
+            drawer.ObjectColor = LoadBitmap(new Uri("pack://application:,,,/gk2;component/Resources/brick_normalmap.png", UriKind.Absolute));
+            drawer.NormalMap = LoadBitmap(new Uri("pack://application:,,,/gk2;component/Resources/normal_map.jpg", UriKind.Absolute));
             drawer.HeightMap = LoadBitmap(new Uri("pack://application:,,,/gk2;component/Resources/brick_heightmap.png", UriKind.Absolute));
             drawer.UseNormalMap = drawer.UseHeightMap = true;
 
             drawer.Redraw();
+
+            cx = 200;
+            cy = 200;
+            r = 50;
+            a = 0;
+            h = 1;
+
+            lightTimer = new Timer();
+            lightTimer.Elapsed += LightTimer_Elapsed;
+            lightTimer.AutoReset = true;
+            lightTimer.Interval = 250;
+            lightTimer.Start();
+
+            drawer.UseLightPoint = true;
+        }
+
+        private void LightTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            a += 0.1;
+            if (h >= 200)
+                h = 0;
+            if (a >= 2 * Math.PI)
+            {
+                a = 0;
+                h += 10;
+            }
+            var x = cx + r * Math.Cos(a);
+            var y = cy + r * Math.Sin(a);
+
+            Console.WriteLine((x,y));
+
+            image.Dispatcher.Invoke(() =>
+            {
+                drawer.LightPoint = (x, y, h);
+
+                drawer.Redraw();
+            });
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -287,6 +330,15 @@ namespace gk2
 
             polygons.Add(polygon);
             drawer.Drawables.Add(polygon);
+        }
+
+        private void Button_Click_6(object sender, RoutedEventArgs e)
+        {
+            if (double.TryParse(DistortionTextbox.Text, out double res))
+            {
+                drawer.DistortionCoeeficient = res;
+                drawer.Redraw();
+            }
         }
     }
 }
