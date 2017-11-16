@@ -13,6 +13,7 @@ namespace gk2
     public class Drawer : IDrawer
     {
         WriteableBitmap bitmap;
+        int bitmapBitsPerPixel;
         byte[] pixels;
         Color defaultColor;
         int width, height;
@@ -79,6 +80,7 @@ namespace gk2
         {
             this.bitmap = bitmap;
             this.pixels = new byte[width * height * (bitmap.Format.BitsPerPixel / 8)];
+            bitmapBitsPerPixel = bitmap.Format.BitsPerPixel;
 
             this.width = width;
             this.height = height;
@@ -108,7 +110,7 @@ namespace gk2
             }
             else
             {
-                var bitmapPixel = ObjectColor.GetBitmapPixel(objectPixels, x, y);
+                var bitmapPixel = ObjectColor.GetBitmapPixel(objectColor.Format.BitsPerPixel, objectPixels, x, y);
                 var NPrim = GetNPrim(x,y);
                 var r = bitmapPixel.R * LightColor.R * CosNPrimL(NPrim) / 255.0;
                 var g = bitmapPixel.G * LightColor.G * CosNPrimL(NPrim) / 255.0;
@@ -121,7 +123,7 @@ namespace gk2
             if (x < 0 || x >= width || y < 0 || y >= height)
                 return;
             
-            int pixelOffset = bitmap.GetPixelOffset(x, y);
+            int pixelOffset = bitmap.GetPixelOffset(bitmapBitsPerPixel, width, x, y);
         
             pixels[pixelOffset] = color.B;
             pixels[pixelOffset + 1] = color.G;
@@ -135,7 +137,7 @@ namespace gk2
             (x, y, z) = NormalVector;
             if (UseNormalMap)
             {
-                var c = normalMap.GetBitmapPixel(normalMapPixels, xPix, yPix);
+                var c = normalMap.GetBitmapPixel(normalMap.Format.BitsPerPixel, normalMapPixels, xPix, yPix);
                 x = (2 * (c.R / 255.0)) - 1;
                 y = (2 * (c.G / 255.0)) - 1;
                 z = c.B / 255.0;
@@ -144,9 +146,9 @@ namespace gk2
             var D = new double[]{0, 0, 0 };
             if (UseHeightMap)
             {
-                var rightPixel = heightMap.GetBitmapPixel(heightMapPixels, xPix+1, yPix);
-                var middlePixel = heightMap.GetBitmapPixel(heightMapPixels, xPix, yPix);
-                var upPixel = heightMap.GetBitmapPixel(heightMapPixels, xPix, yPix+1);
+                var rightPixel = heightMap.GetBitmapPixel(heightMap.Format.BitsPerPixel, heightMapPixels, xPix+1, yPix);
+                var middlePixel = heightMap.GetBitmapPixel(heightMap.Format.BitsPerPixel, heightMapPixels, xPix, yPix);
+                var upPixel = heightMap.GetBitmapPixel(heightMap.Format.BitsPerPixel, heightMapPixels, xPix, yPix+1);
 
                 D = new double[]{
                     rightPixel.R - middlePixel.R,
@@ -183,7 +185,7 @@ namespace gk2
                     int red = 50;
                     int alpha = 255;
 
-                    int pixelOffset = bitmap.GetPixelOffset(i, j);
+                    int pixelOffset = bitmap.GetPixelOffset(bitmapBitsPerPixel, width, i, j);
 
                     pixels[pixelOffset] = (byte)blue;
                     pixels[pixelOffset + 1] = (byte)green;

@@ -10,18 +10,19 @@ namespace gk2
 {
     public static class BitmapExtensions
     {
-        public static int GetPixelOffset(this BitmapSource bitmap, int x, int y)
+        public static int GetPixelOffset(this BitmapSource bitmap, int bitsPerPixel, int width, int x, int y)
         {
-            return ((x + (bitmap.PixelWidth * y)) * (bitmap.Format.BitsPerPixel / 8));
+            return ((x + (width * y)) * (bitsPerPixel >> 3));
         }
 
-        public static Color GetBitmapPixel(this BitmapSource b, byte[] pixels, int x, int y)
+        public static Color GetBitmapPixel(this BitmapSource b, int bitsPerPixel, byte[] pixels, int x, int y)
         {
-            x %= b.PixelWidth;
+            var width = b.PixelWidth;
+            x %= width;
             y %= b.PixelHeight;
 
-            var offset = b.GetPixelOffset(x, y);
-            return Color.FromArgb(pixels[offset + 3], pixels[offset + 2],
+            var offset = b.GetPixelOffset(bitsPerPixel, width, x, y);
+            return Color.FromRgb(pixels[offset + 2],
                 pixels[offset + 1], pixels[offset]);
         }
     }
