@@ -156,6 +156,7 @@ namespace gk2
         {
             drawer.HeightMap = LoadBitmap(new Uri("pack://application:,,,/gk2;component/Resources/brick_heightmap.png", UriKind.Absolute));
             drawer.Redraw();
+            HeightMapTextureRadio.IsEnabled = true;
         }
 
         private void image_MouseMove(object sender, MouseEventArgs e)

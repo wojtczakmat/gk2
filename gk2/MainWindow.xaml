@@ -58,7 +58,7 @@
             <StackPanel>
                 <Label>Zaburzenie</Label>
                 <RadioButton Checked="RadioButton_Checked_2" IsChecked="True">[0, 0, 0]</RadioButton>
-                <RadioButton Checked="RadioButton_Checked_3">z tekstury</RadioButton>
+                <RadioButton Checked="RadioButton_Checked_3" IsEnabled="False" x:Name="HeightMapTextureRadio">z tekstury</RadioButton>
                 <Button Click="Button_Click_4">Załaduj teksturę</Button>
             </StackPanel>
         </StackPanel>
